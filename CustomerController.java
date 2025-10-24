@@ -1,0 +1,27 @@
+package com.elitebank;
+
+public class CustomerController {
+    private Bank bank;
+
+    public CustomerController(Bank bank) {
+        this.bank = bank;
+    }
+
+    public void registerCustomer(Customer customer) {
+        bank.addCustomer(customer);
+    }
+
+    public boolean authenticate(String username, String password) {
+        for (Customer c : bank.getCustomers()) {
+            if (c.authenticate(username, password)) return true;
+        }
+        return false;
+    }
+    
+    public Customer findCustomerByUsername(String username) {
+        for (Customer c : bank.getCustomers()) {
+            if (c.getUsername().equals(username)) return c;
+        }
+        return null;
+    }
+}

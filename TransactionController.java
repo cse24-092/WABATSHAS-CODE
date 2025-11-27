@@ -1,34 +1,31 @@
+// [file name]: TransactionController.java
 package com.elitebank;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class TransactionController {
-    private List<Transaction> transactions = new ArrayList<>();
+    private Bank bank;
+
+    public TransactionController(Bank bank) {
+        this.bank = bank;
+    }
 
     public void recordTransaction(Transaction t) {
-        transactions.add(t);
+        bank.recordTransaction(t);
     }
 
     public List<Transaction> getTransactionHistory() {
-        return transactions;
+        // This would return all transactions - implement as needed
+        return new ArrayList<>();
     }
     
     public List<Transaction> getTransactionsForAccount(String accountNumber) {
-        List<Transaction> accountTransactions = new ArrayList<>();
-        for (Transaction t : transactions) {
-            if (t.getAccountNumber().equals(accountNumber)) {
-                accountTransactions.add(t);
-            }
-        }
-        return accountTransactions;
+        // Implement based on your needs
+        return new ArrayList<>();
     }
     
     public List<Transaction> getTransactionsForCustomer(Customer customer) {
-        List<Transaction> customerTransactions = new ArrayList<>();
-        for (Account account : customer.getAccounts()) {
-            customerTransactions.addAll(getTransactionsForAccount(account.getAccountNumber()));
-        }
-        return customerTransactions;
+        return bank.getCustomerTransactions(customer);
     }
 }

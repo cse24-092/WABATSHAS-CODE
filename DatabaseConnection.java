@@ -1,21 +1,29 @@
 // [file name]: DatabaseConnection.java
 package com.elitebank;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import org.h2.tools.Server;
+import java.io.File;
 
 public class DatabaseConnection {
-    private static final String URL = "jdbc:h2:./elitebank;DB_CLOSE_DELAY=-1";
+    // Use absolute path to avoid confusion
+    private static final String DB_PATH = System.getProperty("user.dir") + File.separator + "elitebank";
+    private static final String URL = "jdbc:h2:file:" + DB_PATH + ";DB_CLOSE_DELAY=-1";
     private static final String USER = "sa";
     private static final String PASSWORD = "";
+    private static Server webServer;
     
     static {
         initializeDatabase();
+        startH2Console();
     }
     
     public static Connection getConnection() throws SQLException {
+        try {
+            Class.forName("org.h2.Driver");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
     
@@ -69,10 +77,39 @@ public class DatabaseConnection {
                 "FOREIGN KEY (account_number) REFERENCES accounts(account_number))"
             );
             
-            System.out.println("Database initialized successfully!");
+            System.out.println("Database initialized successfully at: " + DB_PATH);
             
         } catch (SQLException e) {
             System.err.println("Error initializing database: " + e.getMessage());
         }
+    }
+    
+    private static void startH2Console() {
+        try {
+            // Start H2 web server on port 8082
+            webServer = Server.createWebServer("-web", "-webAllowOthers", "-webPort", "8082", "-baseDir", System.getProperty("user.dir")).start();
+            System.out.println("H2 Console started at: http://localhost:8082");
+            System.out.println("=== H2 CONNECTION DETAILS ===");
+            System.out.println("JDBC URL: jdbc:h2:file:" + DB_PATH);
+            System.out.println("Username: " + USER);
+            System.out.println("Password: " + PASSWORD);
+            System.out.println("=============================");
+        } catch (SQLException e) {
+            System.err.println("Failed to start H2 Console: " + e.getMessage());
+            System.out.println("You can manually start H2 console later.");
+        }
+    }
+    
+    public static void stopH2Console() {
+        if (webServer != null) {
+            webServer.stop();
+        }
+    }
+    
+    // Method to get connection details for manual H2 console connection
+    public static String getConnectionDetails() {
+        return "JDBC URL: jdbc:h2:file:" + DB_PATH + "\n" +
+               "Username: " + USER + "\n" +
+               "Password: " + PASSWORD;
     }
 }

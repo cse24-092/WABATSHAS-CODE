@@ -1,3 +1,4 @@
+// [file name]: BankingApplication.java
 package com.elitebank;
 
 import javafx.application.Application;
@@ -36,13 +37,15 @@ public class BankingApplication extends Application {
         // Create bank instance
         bank = new Bank("Elite Bank", "Main Branch");
         
-        // Initialize controllers
+        // Initialize controllers - FIXED: pass bank to TransactionController
         customerController = new CustomerController(bank);
         accountController = new AccountController(bank);
-        transactionController = new TransactionController();
+        transactionController = new TransactionController(bank); // ADD bank parameter
         
-        // Setup sample data
-        setupSampleData();
+        // Only setup sample data if no customers exist
+        if (bank.getCustomers().isEmpty()) {
+            setupSampleData();
+        }
     }
 
     private void setupSampleData() {
@@ -57,6 +60,10 @@ public class BankingApplication extends Application {
         accountController.openAccount("CUST001", "ACC001", "savings", 1000.0);
         accountController.openAccount("CUST001", "ACC002", "cheque", 500.0);
         accountController.openAccount("CUST001", "ACC003", "investment", 2000.0);
+        
+        // Add sample transactions
+        transactionController.recordTransaction(new Transaction("TXN001", 500.0, "deposit", "ACC001"));
+        transactionController.recordTransaction(new Transaction("TXN002", 200.0, "withdraw", "ACC002"));
     }
 
     public static void main(String[] args) {

@@ -1,3 +1,4 @@
+// [file name]: Main.java
 package com.elitebank;
 
 import javafx.application.Application;
@@ -32,9 +33,12 @@ public class Main extends Application {
         bank = new Bank("Elite Bank", "Main Branch");
         customerController = new CustomerController(bank);
         accountController = new AccountController(bank);
-        transactionController = new TransactionController();
+        transactionController = new TransactionController(bank);
         
-        setupSampleCustomers();
+        // Only setup sample data if no customers exist
+        if (bank.getCustomers().isEmpty()) {
+            setupSampleCustomers();
+        }
     }
 
     private void setupSampleCustomers() {
@@ -52,14 +56,6 @@ public class Main extends Application {
         transactionController.recordTransaction(new Transaction("TXN001", 500.0, "deposit", "ACC1001"));
         transactionController.recordTransaction(new Transaction("TXN002", 200.0, "withdraw", "ACC1002"));
         transactionController.recordTransaction(new Transaction("TXN003", 1000.0, "deposit", "ACC1003"));
-
-        // Sample customer 2
-        Address address2 = new Address("456 Oak Ave", "Francistown", "BW");
-        Customer customer2 = new Customer("CUST1002", "Sarah", "Smith", "sarah", "1234", address2);
-        customerController.registerCustomer(customer2);
-        
-        accountController.openAccount("CUST1002", "ACC2001", "savings", 2500.0);
-        accountController.openAccount("CUST1002", "ACC2002", "investment", 5000.0);
     }
 
     public static void main(String[] args) {
